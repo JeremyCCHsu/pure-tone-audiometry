@@ -363,6 +363,7 @@ export const useHearingTest = () => {
     resumeTest,
     stopTest,
     switchFrequencies,
-    switchFrequencyStep
+    switchFrequencyStep,
+    addResult: recordResult
   };
 };
