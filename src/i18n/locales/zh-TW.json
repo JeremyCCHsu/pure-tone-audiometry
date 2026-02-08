@@ -14,6 +14,7 @@
     "textareaPlaceholder": "例如：1000, 2000, 4000",
     "startAuto": "開始自動校準與測試",
     "enterManual": "進入手動模式",
+    "importJson": "匯入之前的結果 (JSON)",
     "alertNoFreq": "請輸入至少一個有效的頻率。"
   },
   "calibration": {

@@ -17,7 +17,7 @@ function App() {
   const [isManualMode, setIsManualMode] = useState(false);
   const [calibrationGain, setCalibrationGain] = useState<number>(0.001);
 
-  const { state: testState, startTest, handleInput, pauseTest, resumeTest, stopTest, switchFrequencies, switchFrequencyStep, addResult } = useHearingTest();
+  const { state: testState, startTest, handleInput, pauseTest, resumeTest, stopTest, switchFrequencies, switchFrequencyStep, addResult, loadResults, resetTest } = useHearingTest();
 
   // Watch for test completion
   useEffect(() => {
@@ -33,6 +33,8 @@ function App() {
   };
 
   const handleStartManual = () => {
+      // Clear previous results when starting new manual test
+      resetTest();
       // Skip calibration for manual mode
       setIsManualMode(true);
       setCalibrationGain(0.001); // Default calibration or last known?
@@ -52,6 +54,7 @@ function App() {
   };
 
   const handleRestart = () => {
+      resetTest();
       setView('landing');
       setIsManualMode(false);
   };
@@ -71,10 +74,21 @@ function App() {
     startTest([5000, 5500, 6000, 6500, 7000, 7500, 8000], calibrationGain, true);
   };
 
+  const handleImportResults = (results: any[], baselineGain: number) => {
+      loadResults(results, baselineGain);
+      setView('results');
+  };
+
   return (
     <div className="app-container">
       <LanguageSwitcher />
-      {view === 'landing' && <Landing onStart={handleStartCalibration} onManualStart={handleStartManual} />}
+      {view === 'landing' && (
+        <Landing
+            onStart={handleStartCalibration}
+            onManualStart={handleStartManual}
+            onImport={handleImportResults}
+        />
+      )}
       {view === 'calibration' && <Calibration onComplete={handleFinishCalibration} onHome={handleRestart} />}
       {view === 'test' && (
           <TestInterface

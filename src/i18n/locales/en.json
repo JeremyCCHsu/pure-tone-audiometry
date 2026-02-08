@@ -14,6 +14,7 @@
     "textareaPlaceholder": "e.g., 1000, 2000, 4000",
     "startAuto": "Start Auto Calibration & Test",
     "enterManual": "Enter Manual Mode",
+    "importJson": "Import previous result (JSON)",
     "alertNoFreq": "Please enter at least one valid frequency."
   },
   "calibration": {

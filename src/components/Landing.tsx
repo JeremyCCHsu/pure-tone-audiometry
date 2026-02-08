@@ -5,12 +5,14 @@ import { FREQUENCIES } from '../utils/constants';
 interface LandingProps {
   onStart: (frequencies: number[]) => void;
   onManualStart: () => void;
+  onImport: (results: any[], baselineGain: number) => void;
 }
 
-export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
+export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart, onImport }) => {
   const { t } = useTranslation();
   const [selectedSet, setSelectedSet] = useState<'LOW' | 'HIGH' | 'FULL'>('LOW');
   const [customFrequencies, setCustomFrequencies] = useState<string>(FREQUENCIES.FULL.join(', '));
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const getCurrentFrequencies = () => {
     if (selectedSet === 'FULL') {
@@ -29,6 +31,28 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
       return;
     }
     onStart(freqs);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        if (json.results && Array.isArray(json.results)) {
+          onImport(json.results, json.baselineGain || 0.001);
+        } else {
+          alert('Invalid JSON format: missing results array');
+        }
+      } catch (err) {
+        alert('Failed to parse JSON file');
+      }
+    };
+    reader.readAsText(file);
+    // Reset input
+    e.target.value = '';
   };
 
   const sets: ('LOW' | 'HIGH' | 'FULL')[] = ['LOW', 'HIGH', 'FULL'];
@@ -183,19 +207,50 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
 
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+      <div style={{ textAlign: 'center', marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem', alignItems: 'center' }}>
         <button
             onClick={handleStart}
-            style={{ fontSize: '1.1em', padding: '0.5em 2em', backgroundColor: '#646cff', color: 'white', border: 'none' }}
+            style={{ width: '100%', maxWidth: '300px', fontSize: '1.1em', padding: '0.5em 2em', backgroundColor: '#646cff', color: 'white', border: 'none' }}
         >
           {t('landing.startAuto')}
         </button>
 
         <button
             onClick={onManualStart}
-            style={{ fontSize: '1em', padding: '0.5em 2em', backgroundColor: '#333', border: '1px solid #666' }}
+            style={{ width: '100%', maxWidth: '300px', fontSize: '1em', padding: '0.5em 2em', backgroundColor: '#333', border: '1px solid #666' }}
         >
           {t('landing.enterManual')}
+        </button>
+
+        <input
+            type="file"
+            accept=".json"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            style={{ display: 'none' }}
+        />
+        <button
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+                width: '100%',
+                maxWidth: '300px',
+                fontSize: '1em',
+                padding: '0.5em 2em',
+                backgroundColor: 'transparent',
+                border: '1px solid #444',
+                color: '#aaa',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+            }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          {t('landing.importJson')}
         </button>
       </div>
     </div>
