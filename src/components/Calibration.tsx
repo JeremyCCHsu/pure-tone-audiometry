@@ -29,14 +29,11 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
     };
   }, []);
 
-  const adjustVolume = (direction: 'up' | 'down') => {
-      const step = 1.122; // 1dB
-      let newGain = gain;
-      if (direction === 'up') {
-          newGain = Math.min(1.0, gain * step);
-      } else {
-          newGain = Math.max(0.000001, gain / step);
-      }
+  const adjustVolume = (dbStep: number) => {
+      const multiplier = Math.pow(10, dbStep / 20);
+      let newGain = gain * multiplier;
+      // Clamp between -90dB and 0dB (approx)
+      newGain = Math.min(1.0, Math.max(0.0000001, newGain));
       setGain(newGain);
       if (toneControl.current) {
           toneControl.current.setGain(newGain);
@@ -52,10 +49,15 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
 
       if (!isPlaying) return;
 
-      if (e.key === 'y' || e.key === 'Y') {
-        adjustVolume('up');
-      } else if (e.key === 'h' || e.key === 'H') {
-        adjustVolume('down');
+      const k = e.key.toLowerCase();
+      if (k === 'y') {
+        adjustVolume(5);
+      } else if (k === 'h') {
+        adjustVolume(-5);
+      } else if (k === 'i') {
+        adjustVolume(1);
+      } else if (k === 'k') {
+        adjustVolume(-1);
       }
     };
 
@@ -160,35 +162,40 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
       </ol>
 
       <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
-        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
             <button
-                onClick={() => adjustVolume('up')}
-                style={{
-                    backgroundColor: '#444',
-                    border: '1px solid #666',
-                    padding: '0.5rem 1rem',
-                    fontSize: '1.2em',
-                    minWidth: '50px',
-                    flex: '1',
-                    maxWidth: '100px'
-                }}
+                onClick={() => adjustVolume(-5)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
                 disabled={!isPlaying}
-            >+</button>
+            >-5</button>
             <button
-                onClick={() => adjustVolume('down')}
-                style={{
-                    backgroundColor: '#444',
-                    border: '1px solid #666',
-                    padding: '0.5rem 1rem',
-                    fontSize: '1.2em',
-                    minWidth: '50px',
-                    flex: '1',
-                    maxWidth: '100px'
-                }}
+                onClick={() => adjustVolume(-1)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
                 disabled={!isPlaying}
-            >-</button>
+            >-1</button>
+            <button
+                onClick={() => adjustVolume(1)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
+                disabled={!isPlaying}
+            >+1</button>
+            <button
+                onClick={() => adjustVolume(5)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
+                disabled={!isPlaying}
+            >+5</button>
         </div>
-        <button onClick={toggleTone} style={{ padding: '0.8rem 1.5rem', fontSize: '1.1em' }}>
+        <button
+          onClick={toggleTone}
+          style={{
+            padding: '0.8rem 1.5rem',
+            fontSize: '1.1em',
+            backgroundColor: isPlaying ? '#d32f2f' : '#2e7d32', // Red when playing, Green when stopped
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
           {isPlaying ? t('calibration.stopTone') : t('calibration.startTone')}
         </button>
         <div style={{ marginTop: '0.5rem' }}>

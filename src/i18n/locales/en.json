@@ -6,7 +6,7 @@
     "baseSet": "Base Set",
     "highFreq": "High Freq",
     "customSet": "Custom Set",
-    "hzRange": "125Hz - 4kHz",
+    "hzRange": "500Hz - 8kHz",
     "hzRangeHigh": "4kHz - 8kHz",
     "customList": "Custom List",
     "freqs": "freqs",
