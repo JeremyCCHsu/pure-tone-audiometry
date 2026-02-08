@@ -1,0 +1,185 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --primary-color: #646cff;
+  --secondary-color: #535bf2;
+  --bg-color: #242424;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  width: 100%;
+  justify-content: center;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+    --bg-color: #ffffff;
+    --text-main: #213547;
+    --text-muted: #666;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2rem;
+  }
+  .app-container {
+      padding: 0.5rem;
+  }
+  button {
+      padding: 0.5em 1em;
+  }
+}
+
+.app-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  min-height: 100vh;
+}
+
+/* Ensure body can scroll if needed */
+body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    align-items: flex-start; /* Changed from place-items: center to allow top alignment for scrolling */
+}
+
+/* Flash Interface Responsiveness */
+.flash-container {
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.flash-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  transition: all 0.1s;
+  position: relative;
+  /* Border handled inline or via JS logic usually, but keep layout here */
+}
+
+.flash-circle span {
+    position: absolute;
+    margin-top: 80px;
+    font-size: 1rem;
+}
+
+.flash-skip {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.1s;
+}
+
+.bottom-controls {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .flash-container {
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .flash-circle {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+  .flash-circle span {
+     margin-top: 50px;
+     font-size: 0.8rem;
+  }
+  .flash-skip {
+    width: 60px;
+    height: 60px;
+    font-size: 0.8rem;
+  }
+  .bottom-controls {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .bottom-controls button {
+    width: 100%;
+    padding: 0.8rem;
+  }
+}
+
