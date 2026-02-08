@@ -7,6 +7,7 @@ import { Results } from './components/Results';
 import { useHearingTest } from './hooks/useHearingTest';
 
 import { ManualTestInterface } from './components/ManualTestInterface';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 
 type View = 'landing' | 'calibration' | 'test' | 'manual' | 'results';
 
@@ -72,6 +73,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <LanguageSwitcher />
       {view === 'landing' && <Landing onStart={handleStartCalibration} onManualStart={handleStartManual} />}
       {view === 'calibration' && <Calibration onComplete={handleFinishCalibration} onHome={handleRestart} />}
       {view === 'test' && (

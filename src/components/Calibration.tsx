@@ -1,5 +1,5 @@
-// React and hooks are already imported
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { audioEngine } from '../audio/AudioEngine';
 
 interface CalibrationProps {
@@ -8,6 +8,7 @@ interface CalibrationProps {
 }
 
 export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) => {
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [gain, setGain] = useState(0.001); // Start at ~-60dB
   const toneControl = useRef<{ stop: () => void; setGain: (g: number) => void } | null>(null);
@@ -145,17 +146,17 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
 
   return (
     <div style={{ maxWidth: '600px', width: '100%', margin: '0 auto', textAlign: 'left', padding: '0.5rem' }}>
-      <button onClick={onHome} style={{marginBottom: '0.5rem', padding: '0.4rem'}}>← Home</button>
-      <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>Audio Calibration</h2>
+      <button onClick={onHome} style={{marginBottom: '0.5rem', padding: '0.4rem'}}>← {t('calibration.home')}</button>
+      <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>{t('calibration.title')}</h2>
       <p style={{ fontSize: '0.9rem', marginBottom: '1rem', color: '#ccc' }}>
-        To ensure accurate results, we need to calibrate your system volume.
+        {t('calibration.description')}
       </p>
       <ol style={{ paddingLeft: '1.2rem', fontSize: '0.9rem', lineHeight: '1.4' }}>
-        <li>Wear your headphones.</li>
-        <li>Set device volume to moderate.</li>
-        <li>Click <strong>Start Tone</strong>.</li>
-        <li>Adjust volume until you <strong>barely hear</strong> it.</li>
-        <li>This is your baseline.</li>
+        <li>{t('calibration.step1')}</li>
+        <li>{t('calibration.step2')}</li>
+        <li>{t('calibration.step3')}</li>
+        <li>{t('calibration.step4')}</li>
+        <li>{t('calibration.step5')}</li>
       </ol>
 
       <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
@@ -188,10 +189,10 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
             >-</button>
         </div>
         <button onClick={toggleTone} style={{ padding: '0.8rem 1.5rem', fontSize: '1.1em' }}>
-          {isPlaying ? 'Stop Tone' : 'Start Tone (500Hz)'}
+          {isPlaying ? t('calibration.stopTone') : t('calibration.startTone')}
         </button>
         <div style={{ marginTop: '0.5rem' }}>
-           <small>Level: {(20 * Math.log10(gain / 0.001)).toFixed(1)} dB</small>
+           <small>{t('calibration.level')}: {(20 * Math.log10(gain / 0.001)).toFixed(1)} dB</small>
         </div>
         <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', width: '100%' }}>
              <canvas
@@ -210,18 +211,18 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
       </div>
 
       <div style={{ marginTop: '1.5rem', borderTop: '1px solid #444', paddingTop: '1rem' }}>
-        <h3 style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>Instructions</h3>
+        <h3 style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>{t('calibration.instructions')}</h3>
         <ul style={{ paddingLeft: '1.2rem', fontSize: '0.9rem', lineHeight: '1.4' }}>
-            <li><strong>F</strong> / <strong>Left Button</strong> for Left Ear.</li>
-            <li><strong>J</strong> / <strong>Right Button</strong> for Right Ear.</li>
-            <li><strong>Space</strong> / <strong>Skip</strong> if unsure.</li>
+            <li>{t('calibration.instrLeft')}</li>
+            <li>{t('calibration.instrRight')}</li>
+            <li>{t('calibration.instrSpace')}</li>
         </ul>
         <div style={{textAlign: 'center', marginTop: '1.5rem'}}>
             <button
                 onClick={handleStartTest}
                 style={{ backgroundColor: '#646cff', color: 'white', padding: '0.8em 2em', fontSize: '1.1em', width: '100%', maxWidth: '300px' }}
             >
-                Start Test
+                {t('calibration.startTest')}
             </button>
         </div>
       </div>

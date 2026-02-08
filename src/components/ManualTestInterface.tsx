@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { audioEngine } from '../audio/AudioEngine';
 import { Ear, TestResult } from '../types';
 
@@ -15,6 +16,7 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
   onHome,
   onViewResults
 }) => {
+  const { t } = useTranslation();
   const [currentFreq, setCurrentFreq] = useState<number>(1000);
   const [currentVol, setCurrentVol] = useState<number>(0); // dB relative
   const [currentEar, setCurrentEar] = useState<Ear>('left');
@@ -138,7 +140,7 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
                setCurrentVol(0); // Reset volume
            } else {
                // Finished all?
-               alert("All frequencies tested!");
+               alert(t('manual.allTested'));
            }
       } else {
           // Switch Ear
@@ -218,18 +220,18 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', justifyContent: 'center' }}>
-      <h2>Manual Mode</h2>
+      <h2>{t('manual.title')}</h2>
 
       <div style={{ marginBottom: '1rem', fontSize: '1.5em', color: '#888' }}>
         {isPlaying ? (
-           <span style={{ color: '#646cff', fontWeight: 'bold' }}>Playing Tone...</span>
+           <span style={{ color: '#646cff', fontWeight: 'bold' }}>{t('manual.playing')}</span>
         ) : (
-           <span>Ready</span>
+           <span>{t('manual.ready')}</span>
         )}
       </div>
 
       <div style={{ height: '24px', marginBottom: '0.5rem', color: '#4caf50', fontWeight: 'bold' }}>
-          {lastRecorded && <span>Recorded: {lastRecorded}</span>}
+          {lastRecorded && <span>{t('manual.recorded')}: {lastRecorded}</span>}
       </div>
 
       <div style={{
@@ -255,7 +257,7 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
                     padding: '0.5rem'
                 }}
               >
-                  Left Ear
+                  {t('manual.leftEar')}
               </button>
               <button
                 onClick={() => setCurrentEar('right')}
@@ -267,13 +269,13 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
                     padding: '0.5rem'
                 }}
               >
-                  Right Ear
+                  {t('manual.rightEar')}
               </button>
           </div>
 
           {/* Frequency Control */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
-              <span style={{ color: '#888', fontSize: '0.8rem' }}>Frequency</span>
+              <span style={{ color: '#888', fontSize: '0.8rem' }}>{t('manual.frequency')}</span>
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{currentFreq} Hz</div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button onClick={() => stepFreq('down')} style={{ padding: '0.3rem 0.8rem' }}>&lt;</button>
@@ -283,7 +285,7 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
 
           {/* Volume Control */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
-              <span style={{ color: '#888', fontSize: '0.8rem' }}>Volume (dB)</span>
+              <span style={{ color: '#888', fontSize: '0.8rem' }}>{t('manual.volume')}</span>
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{currentVol} dB</div>
               <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                   <button onClick={() => adjustVolume(-5)} style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>-5</button>
@@ -320,7 +322,7 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
                 minWidth: '150px'
             }}
           >
-              {isPlaying ? 'Stop Tone' : 'Play Tone'}
+              {isPlaying ? t('manual.stopTone') : t('manual.playTone')}
           </button>
 
           <button
@@ -332,13 +334,13 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
                 minWidth: '150px'
             }}
           >
-              Confirm / Record
+              {t('manual.confirmRecord')}
           </button>
       </div>
 
       <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-          <button onClick={onHome} style={{ backgroundColor: '#444' }}>Home</button>
-          <button onClick={onViewResults} style={{ backgroundColor: '#444' }}>View Results</button>
+          <button onClick={onHome} style={{ backgroundColor: '#444' }}>{t('manual.home')}</button>
+          <button onClick={onViewResults} style={{ backgroundColor: '#444' }}>{t('manual.viewResults')}</button>
       </div>
 
     </div>

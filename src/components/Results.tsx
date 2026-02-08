@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,6 +32,7 @@ interface ResultsProps {
 }
 
 export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onRestart, onContinue, onHome }) => {
+  const { t } = useTranslation();
   // Process results
   // We want to link frequency (x) to dB (y)
   // Usually Audiograms have 0 top, 100 bottom. We can invert axis in chartjs.
@@ -85,7 +87,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
     labels: allFrequencies,
     datasets: [
       {
-        label: 'Left Threshold',
+        label: t('results.leftThreshold'),
         data: leftThresholdPoints,
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
@@ -95,7 +97,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
         order: 1
       },
       {
-        label: 'Right Threshold',
+        label: t('results.rightThreshold'),
         data: rightThresholdPoints,
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -105,7 +107,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
       },
       // Scatter points for all events
       {
-          label: 'Left Hits',
+          label: t('results.leftHits'),
           data: leftHits,
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.2)',
@@ -115,7 +117,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           order: 3
       },
       {
-          label: 'Right Hits',
+          label: t('results.rightHits'),
           data: rightHits,
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -125,7 +127,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           order: 4
       },
       {
-          label: 'Left Misses',
+          label: t('results.leftMisses'),
           data: leftMisses,
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.2)',
@@ -141,7 +143,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           order: 5
       },
       {
-          label: 'Right Misses',
+          label: t('results.rightMisses'),
           data: rightMisses,
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -166,7 +168,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
         // Let's set min/max based on data or fixed range
         title: {
             display: true,
-            text: 'dB relative to Baseline'
+            text: t('results.dbRelative')
         },
         // Suggested range
         suggestedMin: -10,
@@ -175,7 +177,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
       x: {
           title: {
             display: true,
-            text: 'Frequency (Hz)'
+            text: t('results.frequencyHz')
           }
       }
     },
@@ -188,7 +190,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
       },
       title: {
         display: true,
-        text: 'Audiogram (Relative to Baseline)',
+        text: t('results.audiogramTitle'),
       },
     },
   };
@@ -208,7 +210,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
 
   return (
     <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto', paddingBottom: '2rem' }}>
-      <h2 style={{ fontSize: '1.8rem', margin: '1rem 0' }}>Results</h2>
+      <h2 style={{ fontSize: '1.8rem', margin: '1rem 0' }}>{t('results.title')}</h2>
       <div style={{ backgroundColor: 'white', padding: '0.5rem', borderRadius: '8px' }}>
         <div style={{ height: '300px', position: 'relative', width: '100%' }}>
             <Line options={{...options, maintainAspectRatio: false}} data={data} />
@@ -216,7 +218,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
       </div>
 
       <div style={{ backgroundColor: 'white', padding: '0.5rem', borderRadius: '8px', marginTop: '1.5rem' }}>
-        <h3 style={{ fontSize: '1.2rem', margin: '0.5rem 0', color: '#333' }}>Response Time Analysis</h3>
+        <h3 style={{ fontSize: '1.2rem', margin: '0.5rem 0', color: '#333' }}>{t('results.responseTimeAnalysis')}</h3>
         <div style={{ height: '300px', position: 'relative', width: '100%' }}>
             <Scatter
                 options={{
@@ -224,10 +226,10 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            title: { display: true, text: 'Frequency (Hz)' }
+                            title: { display: true, text: t('results.frequencyHz') }
                         },
                         y: {
-                            title: { display: true, text: 'Reaction Time (ms)' },
+                            title: { display: true, text: t('results.reactionTimeMs') },
                             beginAtZero: true,
                             suggestedMin: 0,
                             suggestedMax: 2000
@@ -236,13 +238,13 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Reaction Time vs Frequency'
+                            text: t('results.reactionTimeVsFreq')
                         },
                         tooltip: {
                             callbacks: {
                                 label: (context) => {
                                     const pt = context.raw as any;
-                                    return `Freq: ${pt.x}Hz, Time: ${pt.y}ms, Vol: ${pt.db}dB`;
+                                    return t('results.tooltipLabel', { x: pt.x, y: pt.y, db: pt.db });
                                 }
                             }
                         }
@@ -250,7 +252,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
                 }}
                 data={{
                     datasets: [{
-                        label: 'Response Time',
+                        label: t('results.responseTime'),
                         data: results
                             .filter(r => r.responseDetected && r.reactionTime)
                             .map(r => ({
@@ -276,18 +278,15 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
       </div>
 
       <div style={{ marginTop: '2rem', display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <button onClick={exportJSON} style={{ flex: '1 1 auto', minWidth: '120px' }}>Export JSON</button>
-        {onContinue && <button onClick={onContinue} style={{ flex: '1 1 auto', minWidth: '120px' }}>Continue (High Freq)</button>}
-        <button onClick={onRestart} style={{ flex: '1 1 auto', minWidth: '120px' }}>Restart Test</button>
-        <button onClick={onHome} style={{backgroundColor: '#555', flex: '1 1 auto', minWidth: '120px'}}>Return to Home</button>
+        <button onClick={exportJSON} style={{ flex: '1 1 auto', minWidth: '120px' }}>{t('results.exportJson')}</button>
+        {onContinue && <button onClick={onContinue} style={{ flex: '1 1 auto', minWidth: '120px' }}>{t('results.continueHigh')}</button>}
+        <button onClick={onRestart} style={{ flex: '1 1 auto', minWidth: '120px' }}>{t('results.restart')}</button>
+        <button onClick={onHome} style={{backgroundColor: '#555', flex: '1 1 auto', minWidth: '120px'}}>{t('results.returnToHome')}</button>
       </div>
 
       <div style={{ marginTop: '2rem', textAlign: 'left', fontSize: '0.9em', color: '#888' }}>
-        <p><strong>Baseline Gain:</strong> {baselineGain ? baselineGain.toExponential(4) : 'N/A'}</p>
-        <p>Note: These results are relative to your baseline.
-           0 dB = Baseline volume. Negative values = Quieter than baseline. Positive = Louder.
-           Values higher on the chart (more negative) indicate better hearing sensitivity.
-           This is NOT a medical diagnosis.</p>
+        <p><strong>{t('results.baselineGain')}:</strong> {baselineGain ? baselineGain.toExponential(4) : 'N/A'}</p>
+        <p>{t('results.note')}</p>
       </div>
     </div>
   );

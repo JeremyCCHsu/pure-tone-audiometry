@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FREQUENCIES } from '../utils/constants';
 
 interface LandingProps {
@@ -7,6 +8,7 @@ interface LandingProps {
 }
 
 export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
+  const { t } = useTranslation();
   const [selectedSet, setSelectedSet] = useState<'LOW' | 'HIGH' | 'FULL'>('LOW');
   const [customFrequencies, setCustomFrequencies] = useState<string>(FREQUENCIES.FULL.join(', '));
 
@@ -23,7 +25,7 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
   const handleStart = () => {
     const freqs = getCurrentFrequencies();
     if (freqs.length === 0) {
-      alert('Please enter at least one valid frequency.');
+      alert(t('landing.alertNoFreq'));
       return;
     }
     onStart(freqs);
@@ -41,13 +43,13 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'left', padding: '0.5rem' }}>
-      <h1 style={{ fontSize: '1.5rem', margin: '0.2rem 0' }}>Hearing Test</h1>
+      <h1 style={{ fontSize: '1.5rem', margin: '0.2rem 0' }}>{t('landing.title')}</h1>
       <p style={{ margin: '0.2rem 0 1rem 0', color: '#888', fontSize: '0.9rem' }}>
-        A pure-tone audiometry test running in your browser.
+        {t('landing.description')}
       </p>
 
       <div style={{ margin: '1rem 0' }}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', marginTop: 0 }}>Select Frequency Set</h3>
+        <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', marginTop: 0 }}>{t('landing.selectFrequencySet')}</h3>
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
           <button
             onClick={() => setSelectedSet('LOW')}
@@ -60,9 +62,9 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
               fontSize: '0.85rem'
             }}
           >
-            <strong>Base Set</strong><br/>
-            125Hz - 4kHz<br/>
-            <small>({FREQUENCIES.LOW.length} freqs)</small>
+            <strong>{t('landing.baseSet')}</strong><br/>
+            {t('landing.hzRange')}<br/>
+            <small>({FREQUENCIES.LOW.length} {t('landing.freqs')})</small>
           </button>
           <button
             onClick={() => setSelectedSet('HIGH')}
@@ -75,9 +77,9 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
               fontSize: '0.85rem'
             }}
           >
-            <strong>High Freq</strong><br/>
-            4kHz - 8kHz<br/>
-            <small>({FREQUENCIES.HIGH.length} freqs)</small>
+            <strong>{t('landing.highFreq')}</strong><br/>
+            {t('landing.hzRangeHigh')}<br/>
+            <small>({FREQUENCIES.HIGH.length} {t('landing.freqs')})</small>
           </button>
           <button
             onClick={() => setSelectedSet('FULL')}
@@ -90,14 +92,14 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
               fontSize: '0.85rem'
             }}
           >
-            <strong>Custom Set</strong><br/>
-            Custom List<br/>
-            <small>({getCurrentFrequencies().length} freqs)</small>
+            <strong>{t('landing.customSet')}</strong><br/>
+            {t('landing.customList')}<br/>
+            <small>({getCurrentFrequencies().length} {t('landing.freqs')})</small>
           </button>
         </div>
 
         <div style={{ padding: '0.6rem', backgroundColor: '#222', borderRadius: '6px', fontSize: '0.85rem' }}>
-             <strong>Selected Frequencies ({getCurrentFrequencies().length}):</strong><br/>
+             <strong>{t('landing.selectedFrequencies')} ({getCurrentFrequencies().length}):</strong><br/>
              {selectedSet === 'FULL' ? (
                <textarea
                  value={customFrequencies}
@@ -114,7 +116,7 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
                    borderRadius: '4px',
                    fontSize: '0.85rem'
                  }}
-                 placeholder="e.g., 1000, 2000, 4000"
+                 placeholder={t('landing.textareaPlaceholder')}
                />
              ) : (
                <span>{FREQUENCIES[selectedSet].join(', ')} Hz</span>
@@ -128,14 +130,14 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
             onClick={handleStart}
             style={{ fontSize: '1.1em', padding: '0.5em 2em' }}
         >
-          Start Auto Calibration & Test
+          {t('landing.startAuto')}
         </button>
 
         <button
             onClick={onManualStart}
             style={{ fontSize: '1em', padding: '0.5em 2em', backgroundColor: '#333', border: '1px solid #666' }}
         >
-          Enter Manual Mode
+          {t('landing.enterManual')}
         </button>
       </div>
     </div>
