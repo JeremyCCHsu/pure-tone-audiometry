@@ -1,5 +1,5 @@
-// React and hooks are already imported
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { audioEngine } from '../audio/AudioEngine';
 
 interface CalibrationProps {
@@ -8,6 +8,7 @@ interface CalibrationProps {
 }
 
 export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) => {
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [gain, setGain] = useState(0.001); // Start at ~-60dB
   const toneControl = useRef<{ stop: () => void; setGain: (g: number) => void } | null>(null);
@@ -28,14 +29,11 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
     };
   }, []);
 
-  const adjustVolume = (direction: 'up' | 'down') => {
-      const step = 1.122; // 1dB
-      let newGain = gain;
-      if (direction === 'up') {
-          newGain = Math.min(1.0, gain * step);
-      } else {
-          newGain = Math.max(0.000001, gain / step);
-      }
+  const adjustVolume = (dbStep: number) => {
+      const multiplier = Math.pow(10, dbStep / 20);
+      let newGain = gain * multiplier;
+      // Clamp between -90dB and 0dB (approx)
+      newGain = Math.min(1.0, Math.max(0.0000001, newGain));
       setGain(newGain);
       if (toneControl.current) {
           toneControl.current.setGain(newGain);
@@ -51,10 +49,15 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
 
       if (!isPlaying) return;
 
-      if (e.key === 'y' || e.key === 'Y') {
-        adjustVolume('up');
-      } else if (e.key === 'h' || e.key === 'H') {
-        adjustVolume('down');
+      const k = e.key.toLowerCase();
+      if (k === 'y') {
+        adjustVolume(5);
+      } else if (k === 'h') {
+        adjustVolume(-5);
+      } else if (k === 'i') {
+        adjustVolume(1);
+      } else if (k === 'k') {
+        adjustVolume(-1);
       }
     };
 
@@ -145,53 +148,58 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
 
   return (
     <div style={{ maxWidth: '600px', width: '100%', margin: '0 auto', textAlign: 'left', padding: '0.5rem' }}>
-      <button onClick={onHome} style={{marginBottom: '0.5rem', padding: '0.4rem'}}>← Home</button>
-      <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>Audio Calibration</h2>
+      <button onClick={onHome} style={{marginBottom: '0.5rem', padding: '0.4rem'}}>← {t('calibration.home')}</button>
+      <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>{t('calibration.title')}</h2>
       <p style={{ fontSize: '0.9rem', marginBottom: '1rem', color: '#ccc' }}>
-        To ensure accurate results, we need to calibrate your system volume.
+        {t('calibration.description')}
       </p>
       <ol style={{ paddingLeft: '1.2rem', fontSize: '0.9rem', lineHeight: '1.4' }}>
-        <li>Wear your headphones.</li>
-        <li>Set device volume to moderate.</li>
-        <li>Click <strong>Start Tone</strong>.</li>
-        <li>Adjust volume until you <strong>barely hear</strong> it.</li>
-        <li>This is your baseline.</li>
+        <li>{t('calibration.step1')}</li>
+        <li>{t('calibration.step2')}</li>
+        <li>{t('calibration.step3')}</li>
+        <li>{t('calibration.step4')}</li>
+        <li>{t('calibration.step5')}</li>
       </ol>
 
       <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
-        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
             <button
-                onClick={() => adjustVolume('up')}
-                style={{
-                    backgroundColor: '#444',
-                    border: '1px solid #666',
-                    padding: '0.5rem 1rem',
-                    fontSize: '1.2em',
-                    minWidth: '50px',
-                    flex: '1',
-                    maxWidth: '100px'
-                }}
+                onClick={() => adjustVolume(-5)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
                 disabled={!isPlaying}
-            >+</button>
+            >-5</button>
             <button
-                onClick={() => adjustVolume('down')}
-                style={{
-                    backgroundColor: '#444',
-                    border: '1px solid #666',
-                    padding: '0.5rem 1rem',
-                    fontSize: '1.2em',
-                    minWidth: '50px',
-                    flex: '1',
-                    maxWidth: '100px'
-                }}
+                onClick={() => adjustVolume(-1)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
                 disabled={!isPlaying}
-            >-</button>
+            >-1</button>
+            <button
+                onClick={() => adjustVolume(1)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
+                disabled={!isPlaying}
+            >+1</button>
+            <button
+                onClick={() => adjustVolume(5)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
+                disabled={!isPlaying}
+            >+5</button>
         </div>
-        <button onClick={toggleTone} style={{ padding: '0.8rem 1.5rem', fontSize: '1.1em' }}>
-          {isPlaying ? 'Stop Tone' : 'Start Tone (500Hz)'}
+        <button
+          onClick={toggleTone}
+          style={{
+            padding: '0.8rem 1.5rem',
+            fontSize: '1.1em',
+            backgroundColor: isPlaying ? '#d32f2f' : '#2e7d32', // Red when playing, Green when stopped
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
+          {isPlaying ? t('calibration.stopTone') : t('calibration.startTone')}
         </button>
         <div style={{ marginTop: '0.5rem' }}>
-           <small>Level: {(20 * Math.log10(gain / 0.001)).toFixed(1)} dB</small>
+           <small>{t('calibration.level')}: {(20 * Math.log10(gain / 0.001)).toFixed(1)} dB</small>
         </div>
         <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', width: '100%' }}>
              <canvas
@@ -210,18 +218,18 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
       </div>
 
       <div style={{ marginTop: '1.5rem', borderTop: '1px solid #444', paddingTop: '1rem' }}>
-        <h3 style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>Instructions</h3>
+        <h3 style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>{t('calibration.instructions')}</h3>
         <ul style={{ paddingLeft: '1.2rem', fontSize: '0.9rem', lineHeight: '1.4' }}>
-            <li><strong>F</strong> / <strong>Left Button</strong> for Left Ear.</li>
-            <li><strong>J</strong> / <strong>Right Button</strong> for Right Ear.</li>
-            <li><strong>Space</strong> / <strong>Skip</strong> if unsure.</li>
+            <li>{t('calibration.instrLeft')}</li>
+            <li>{t('calibration.instrRight')}</li>
+            <li>{t('calibration.instrSpace')}</li>
         </ul>
         <div style={{textAlign: 'center', marginTop: '1.5rem'}}>
             <button
                 onClick={handleStartTest}
                 style={{ backgroundColor: '#646cff', color: 'white', padding: '0.8em 2em', fontSize: '1.1em', width: '100%', maxWidth: '300px' }}
             >
-                Start Test
+                {t('calibration.startTest')}
             </button>
         </div>
       </div>

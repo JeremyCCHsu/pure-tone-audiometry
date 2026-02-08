@@ -88,8 +88,10 @@ button:focus-visible {
 .app-container {
   width: 100%;
   max-width: 800px;
+  min-width: 320px;
   margin: 0 auto;
   padding: 1rem;
+  box-sizing: border-box;
   text-align: center;
   display: flex;
   flex-direction: column;

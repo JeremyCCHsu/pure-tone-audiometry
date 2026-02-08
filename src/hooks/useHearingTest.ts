@@ -355,6 +355,29 @@ export const useHearingTest = () => {
     setState(prev => ({ ...prev, status: 'completed', isPlaying: false }));
   };
 
+  const loadResults = (results: any[], baselineGain: number) => {
+    setState(prev => ({
+      ...prev,
+      results,
+      baselineGain,
+      status: 'completed'
+    }));
+    baselineGainRef.current = baselineGain;
+  };
+
+  const resetTest = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    progressRef.current = null;
+    setState({
+      isPlaying: false,
+      currentFreq: 0,
+      currentDb: CALIBRATION_DB,
+      currentEar: 'left',
+      results: [],
+      status: 'idle',
+    });
+  };
+
   return {
     state,
     startTest,
@@ -364,6 +387,8 @@ export const useHearingTest = () => {
     stopTest,
     switchFrequencies,
     switchFrequencyStep,
-    addResult: recordResult
+    addResult: recordResult,
+    loadResults,
+    resetTest
   };
 };

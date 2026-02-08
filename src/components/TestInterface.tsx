@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HearingTestState } from '../types';
 import { audioEngine } from '../audio/AudioEngine';
 import { FREQUENCIES } from '../utils/constants';
@@ -16,6 +17,7 @@ interface TestInterfaceProps {
 }
 
 export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, onStop, onPause, onResume, onSwitchFreqs, onRecalibrate, onHome, onFrequencyStep }) => {
+  const { t } = useTranslation();
   const [flash, setFlash] = useState<'left' | 'right' | 'space' | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
@@ -119,25 +121,25 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
             justifyContent: 'center',
             borderRadius: '8px'
         }}>
-            <h2>Test Paused</h2>
+            <h2>{t('test.paused')}</h2>
             <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column', width: '300px' }}>
-                <button onClick={onResume} style={{ padding: '1rem' }}>Resume Test</button>
+                <button onClick={onResume} style={{ padding: '1rem' }}>{t('test.resume')}</button>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button onClick={() => onSwitchFreqs(FREQUENCIES.LOW)} style={{ flex: 1 }}>Switch to Low</button>
-                    <button onClick={() => onSwitchFreqs(FREQUENCIES.HIGH)} style={{ flex: 1 }}>Switch to High</button>
+                    <button onClick={() => onSwitchFreqs(FREQUENCIES.LOW)} style={{ flex: 1 }}>{t('test.switchToLow')}</button>
+                    <button onClick={() => onSwitchFreqs(FREQUENCIES.HIGH)} style={{ flex: 1 }}>{t('test.switchToHigh')}</button>
                 </div>
-                <button onClick={onHome} style={{ padding: '1rem', backgroundColor: '#555' }}>Return to Home</button>
-                <button onClick={onRecalibrate} style={{ padding: '1rem', backgroundColor: '#555' }}>Recalibrate</button>
-                <button onClick={onStop} style={{ padding: '1rem', backgroundColor: '#d32f2f' }}>Stop & Show Results</button>
+                <button onClick={onHome} style={{ padding: '1rem', backgroundColor: '#555' }}>{t('test.returnToHome')}</button>
+                <button onClick={onRecalibrate} style={{ padding: '1rem', backgroundColor: '#555' }}>{t('test.recalibrate')}</button>
+                <button onClick={onStop} style={{ padding: '1rem', backgroundColor: '#d32f2f' }}>{t('test.stopAndShow')}</button>
             </div>
         </div>
       )}
 
       <div style={{ marginBottom: '1rem', fontSize: '1.5em', color: '#888' }}>
         {state.isPlaying ? (
-           <span style={{ color: '#646cff', fontWeight: 'bold' }}>Listening...</span>
+           <span style={{ color: '#646cff', fontWeight: 'bold' }}>{t('test.listening')}</span>
         ) : (
-           <span>Waiting...</span>
+           <span>{t('test.waiting')}</span>
         )}
       </div>
 
@@ -165,7 +167,7 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
             }}
         >
           F
-          <span>LEFT</span>
+          <span>{t('test.left')}</span>
         </div>
 
         <div
@@ -175,7 +177,7 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
                 backgroundColor: flash === 'space' ? 'rgba(255,255,255,0.1)' : 'transparent',
             }}
         >
-          SKIP
+          {t('test.skip')}
         </div>
 
         <div
@@ -186,14 +188,14 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
             }}
         >
           J
-          <span>RIGHT</span>
+          <span>{t('test.right')}</span>
         </div>
       </div>
 
-      <p style={{ marginTop: '2rem', color: '#666', fontSize: '1.2em' }}>
-        Current Frequency: <strong>{state.currentFreq} Hz</strong> |
-        Vol: <strong>{state.currentDb > 0 ? '+' : ''}{state.currentDb.toFixed(1)} dB</strong> |
-        Ear: <span style={{ textTransform: 'uppercase', color: state.currentEar === 'left' ? '#646cff' : '#ff6384' }}>{state.currentEar}</span>
+      <p style={{ marginTop: '2rem', color: '#666', fontSize: '1.1em', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <span>{t('test.currentFreq')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentFreq} Hz</strong></span> |
+        <span>{t('test.vol')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentDb > 0 ? '+' : ''}{state.currentDb.toFixed(1)} dB</strong></span> |
+        <span>{t('test.ear')}: <span style={{ display: 'inline-block', width: '60px', textTransform: 'uppercase', color: state.currentEar === 'left' ? '#646cff' : '#ff6384', textAlign: 'left' }}>{state.currentEar}</span></span>
       </p>
 
       <div className="bottom-controls">
@@ -201,13 +203,13 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
             onClick={onRecalibrate}
             style={{ backgroundColor: '#444', border: '1px solid #666', fontSize: '0.9em' }}
           >
-              Recalibrate
+              {t('test.recalibrate')}
           </button>
           <button
             onClick={onStop}
             style={{ backgroundColor: '#333', border: '1px solid #666', fontSize: '0.9em' }}
           >
-              Stop Test (Show Results)
+              {t('test.stopTest')}
           </button>
       </div>
     </div>
