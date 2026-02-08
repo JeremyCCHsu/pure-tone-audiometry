@@ -9,7 +9,7 @@ export default defineConfig(({ command }) => {
   }
 
   if (command !== 'serve') {
-    config.base = '/hearing_test_web/'
+    config.base = '/pure-tone-audiometry/'
   }
 
   return config
