@@ -32,8 +32,12 @@ function App() {
   };
 
   const handleStartManual = () => {
+      // Skip calibration for manual mode
       setIsManualMode(true);
-      setView('calibration');
+      setCalibrationGain(0.001); // Default calibration or last known?
+      // Ideally we might want to calibrate once? But request says skip.
+      // We will use a default safe baseline.
+      setView('manual');
   };
 
   const handleFinishCalibration = (baselineGain: number) => {
