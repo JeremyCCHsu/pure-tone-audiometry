@@ -192,10 +192,10 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
         </div>
       </div>
 
-      <p style={{ marginTop: '2rem', color: '#666', fontSize: '1.2em' }}>
-        {t('test.currentFreq')}: <strong>{state.currentFreq} Hz</strong> |
-        {t('test.vol')}: <strong>{state.currentDb > 0 ? '+' : ''}{state.currentDb.toFixed(1)} dB</strong> |
-        {t('test.ear')}: <span style={{ textTransform: 'uppercase', color: state.currentEar === 'left' ? '#646cff' : '#ff6384' }}>{state.currentEar}</span>
+      <p style={{ marginTop: '2rem', color: '#666', fontSize: '1.1em', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <span>{t('test.currentFreq')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentFreq} Hz</strong></span> |
+        <span>{t('test.vol')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentDb > 0 ? '+' : ''}{state.currentDb.toFixed(1)} dB</strong></span> |
+        <span>{t('test.ear')}: <span style={{ display: 'inline-block', width: '60px', textTransform: 'uppercase', color: state.currentEar === 'left' ? '#646cff' : '#ff6384', textAlign: 'left' }}>{state.currentEar}</span></span>
       </p>
 
       <div className="bottom-controls">

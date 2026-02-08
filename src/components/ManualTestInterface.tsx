@@ -276,7 +276,7 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
           {/* Frequency Control */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
               <span style={{ color: '#888', fontSize: '0.8rem' }}>{t('manual.frequency')}</span>
-              <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{currentFreq} Hz</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', width: '120px', textAlign: 'center' }}>{currentFreq} Hz</div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button onClick={() => stepFreq('down')} style={{ padding: '0.3rem 0.8rem' }}>&lt;</button>
                   <button onClick={() => stepFreq('up')} style={{ padding: '0.3rem 0.8rem' }}>&gt;</button>
@@ -286,7 +286,7 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
           {/* Volume Control */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
               <span style={{ color: '#888', fontSize: '0.8rem' }}>{t('manual.volume')}</span>
-              <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{currentVol} dB</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', width: '100px', textAlign: 'center' }}>{currentVol} dB</div>
               <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                   <button onClick={() => adjustVolume(-5)} style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>-5</button>
                   <button onClick={() => adjustVolume(-1)} style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>-1</button>

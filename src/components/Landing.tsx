@@ -51,8 +51,15 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedSet, customFrequencies, handleStart]);
 
+  const getCustomFrequenciesCount = () => {
+    return customFrequencies
+      .split(/[,\s]+/)
+      .map(s => parseInt(s.trim()))
+      .filter(n => !isNaN(n) && n > 0).length;
+  };
+
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'left', padding: '0.5rem' }}>
+    <div style={{ maxWidth: '600px', width: '100%', margin: '0 auto', textAlign: 'left', padding: '0.5rem', boxSizing: 'border-box' }}>
       <h1 style={{ fontSize: '1.5rem', margin: '0.2rem 0' }}>{t('landing.title')}</h1>
       <p style={{ margin: '0.2rem 0 1rem 0', color: '#888', fontSize: '0.9rem' }}>
         {t('landing.description')}
@@ -60,7 +67,7 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
 
       <div style={{ margin: '1rem 0' }}>
         <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', marginTop: 0 }}>{t('landing.selectFrequencySet')}</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
           <button
             onClick={() => setSelectedSet('LOW')}
             style={{
@@ -116,7 +123,7 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
           >
             <strong>{t('landing.customSet')}</strong>
             <span style={{ fontSize: '0.8rem', margin: '2px 0' }}>{t('landing.customList')}</span>
-            <small style={{ color: '#aaa' }}>({getCurrentFrequencies().length} {t('landing.freqs')})</small>
+            <small style={{ color: '#aaa' }}>({getCustomFrequenciesCount()} {t('landing.freqs')})</small>
           </button>
         </div>
 
@@ -125,15 +132,17 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
           backgroundColor: '#222',
           borderRadius: '6px',
           fontSize: '0.85rem',
-          minHeight: '130px',
+          minHeight: '140px',
           width: '100%',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column'
         }}>
-             <div style={{ height: '1.2rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <strong>{t('landing.selectedFrequencies')}</strong>
-                <span style={{ display: 'inline-block', minWidth: '35px', fontWeight: 'bold' }}>({getCurrentFrequencies().length}):</span>
+             <div style={{ height: '1.5rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap' }}>
+                <strong style={{ flexShrink: 0, width: '130px' }}>{t('landing.selectedFrequencies')}</strong>
+                <span style={{ flexShrink: 0, width: '60px', fontWeight: 'bold' }}>({getCurrentFrequencies().length}):</span>
              </div>
-             <div style={{ position: 'relative' }}>
+             <div style={{ position: 'relative', flex: 1 }}>
                {selectedSet === 'FULL' ? (
                  <textarea
                    value={customFrequencies}
@@ -141,27 +150,30 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
                    style={{
                      width: '100%',
                      padding: '0.5rem',
-                     height: '70px',
+                     height: '80px',
                      fontFamily: 'monospace',
                      backgroundColor: '#1a1a1a',
                      color: '#fff',
                      border: '1px solid #444',
                      borderRadius: '4px',
                      fontSize: '0.85rem',
-                     resize: 'none'
+                     resize: 'none',
+                     boxSizing: 'border-box'
                    }}
                    placeholder={t('landing.textareaPlaceholder')}
                  />
                ) : (
                  <div style={{
                     padding: '0.5rem',
-                    height: '70px',
+                    height: '80px',
                     wordBreak: 'break-all',
                     backgroundColor: '#1a1a1a',
-                    border: '1px solid transparent',
+                    border: '1px solid #444',
                     borderRadius: '4px',
                     color: '#ccc',
-                    overflowY: 'auto'
+                    overflowY: 'auto',
+                    boxSizing: 'border-box',
+                    fontFamily: 'monospace'
                   }}>
                     {FREQUENCIES[selectedSet].join(', ')} Hz
                  </div>
