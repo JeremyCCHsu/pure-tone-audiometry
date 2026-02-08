@@ -33,8 +33,10 @@ class AudioEngine {
   // Actually, usually audiograms use 0 dBHL as very quiet and 100 dBHL as loud.
   // But we are working with digital full scale (dBFS).
   // Let's abstract this. The UI will pass a simplified Volume Level (0-100) or we map to gain directly.
-  playTone(freq: number, volumeDb: number, pan: number, duration: number): { stop: () => void, promise: Promise<void> } {
+  playTone(freq: number, volumeDb: number, pan: number, duration: number): { stop: () => void, promise: Promise<void>, setVolume: (db: number) => void } {
       let stopFunc = () => {};
+      let setVolumeFunc = (db: number) => { console.log(db); }; // Placeholder
+
       const promise = new Promise<void>((resolve) => {
         if (!this.ctx || !this.masterGain) return resolve();
 
@@ -56,6 +58,9 @@ class AudioEngine {
 
         gainNode.gain.setValueAtTime(0, now);
         gainNode.gain.linearRampToValueAtTime(gain, now + attack);
+        // If duration is very long, we don't schedule end ramp yet?
+        // But the previous implementation scheduled it.
+        // Let's keep scheduling it, but rely on stopFunc to cancel.
         gainNode.gain.setValueAtTime(gain, now + duration - release);
         gainNode.gain.linearRampToValueAtTime(0, now + duration);
 
@@ -67,6 +72,7 @@ class AudioEngine {
         osc.stop(now + duration + 0.1); // buffer
 
         let isStopped = false;
+
         stopFunc = () => {
             if (isStopped) return;
             isStopped = true;
@@ -78,6 +84,24 @@ class AudioEngine {
             } catch(e) { console.error(e); }
         };
 
+        setVolumeFunc = (vol: number) => {
+            if (isStopped) return;
+            try {
+                 const t = this.ctx?.currentTime || 0;
+                 // Ramp to new volume
+                 gainNode.gain.cancelScheduledValues(t);
+                 gainNode.gain.setValueAtTime(gainNode.gain.value, t); // Current value
+                 gainNode.gain.linearRampToValueAtTime(vol, t + 0.1);
+
+                 // Re-schedule end?
+                 // Since we cancelled scheduled values, the 'end' ramp is gone.
+                 // If we have a fixed duration, we should re-schedule the end?
+                 // But for manual mode (toggle), we rely on manual stop.
+                 // For original 'duration' based calls, this might be tricky if we don't know remaining time.
+                 // However, setVolume is mostly for the toggle/manual mode which uses 3600s.
+            } catch(e) { console.error(e); }
+        };
+
         osc.onended = () => {
           osc.disconnect();
           panner.disconnect();
@@ -86,7 +110,7 @@ class AudioEngine {
         };
       });
 
-      return { stop: stopFunc, promise };
+      return { stop: stopFunc, promise, setVolume: setVolumeFunc };
     }
 
   setMasterVolume(val: number) {

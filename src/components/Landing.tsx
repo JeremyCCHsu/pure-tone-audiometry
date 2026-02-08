@@ -3,9 +3,10 @@ import { FREQUENCIES } from '../utils/constants';
 
 interface LandingProps {
   onStart: (frequencies: number[]) => void;
+  onManualStart: () => void;
 }
 
-export const Landing: React.FC<LandingProps> = ({ onStart }) => {
+export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart }) => {
   const [selectedSet, setSelectedSet] = useState<'LOW' | 'HIGH' | 'FULL'>('LOW');
   const [customFrequencies, setCustomFrequencies] = useState<string>(FREQUENCIES.FULL.join(', '));
 
@@ -122,12 +123,19 @@ export const Landing: React.FC<LandingProps> = ({ onStart }) => {
 
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+      <div style={{ textAlign: 'center', marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
         <button
             onClick={handleStart}
             style={{ fontSize: '1.1em', padding: '0.5em 2em' }}
         >
-          Start Calibration
+          Start Auto Calibration & Test
+        </button>
+
+        <button
+            onClick={onManualStart}
+            style={{ fontSize: '1em', padding: '0.5em 2em', backgroundColor: '#333', border: '1px solid #666' }}
+        >
+          Enter Manual Mode
         </button>
       </div>
     </div>

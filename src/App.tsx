@@ -6,13 +6,17 @@ import { TestInterface } from './components/TestInterface';
 import { Results } from './components/Results';
 import { useHearingTest } from './hooks/useHearingTest';
 
-type View = 'landing' | 'calibration' | 'test' | 'results';
+import { ManualTestInterface } from './components/ManualTestInterface';
+
+type View = 'landing' | 'calibration' | 'test' | 'manual' | 'results';
 
 function App() {
   const [view, setView] = useState<View>('landing');
   const [testFrequencies, setTestFrequencies] = useState<number[]>([]);
+  const [isManualMode, setIsManualMode] = useState(false);
+  const [calibrationGain, setCalibrationGain] = useState<number>(0.001);
 
-  const { state: testState, startTest, handleInput, pauseTest, resumeTest, stopTest, switchFrequencies, switchFrequencyStep } = useHearingTest();
+  const { state: testState, startTest, handleInput, pauseTest, resumeTest, stopTest, switchFrequencies, switchFrequencyStep, addResult } = useHearingTest();
 
   // Watch for test completion
   useEffect(() => {
@@ -23,16 +27,28 @@ function App() {
 
   const handleStartCalibration = (freqs: number[]) => {
       setTestFrequencies(freqs);
+      setIsManualMode(false);
+      setView('calibration');
+  };
+
+  const handleStartManual = () => {
+      setIsManualMode(true);
       setView('calibration');
   };
 
   const handleFinishCalibration = (baselineGain: number) => {
-      setView('test');
-      startTest(testFrequencies, baselineGain);
+      setCalibrationGain(baselineGain);
+      if (isManualMode) {
+          setView('manual');
+      } else {
+          setView('test');
+          startTest(testFrequencies, baselineGain);
+      }
   };
 
   const handleRestart = () => {
       setView('landing');
+      setIsManualMode(false);
   };
 
   const handleRecalibrate = () => {
@@ -40,15 +56,19 @@ function App() {
       setView('calibration');
   };
 
+  const handleShowResults = () => {
+      setView('results');
+  };
+
   const handleContinue = () => {
     // Continue with HIGH frequencies, keeping previous results
     setView('test');
-    startTest([5000, 5500, 6000, 6500, 7000, 7500, 8000], testState.baselineGain || 0.001, true);
+    startTest([5000, 5500, 6000, 6500, 7000, 7500, 8000], calibrationGain, true);
   };
 
   return (
     <div className="app-container">
-      {view === 'landing' && <Landing onStart={handleStartCalibration} />}
+      {view === 'landing' && <Landing onStart={handleStartCalibration} onManualStart={handleStartManual} />}
       {view === 'calibration' && <Calibration onComplete={handleFinishCalibration} onHome={handleRestart} />}
       {view === 'test' && (
           <TestInterface
@@ -61,6 +81,14 @@ function App() {
             onRecalibrate={handleRecalibrate}
             onHome={handleRestart}
             onFrequencyStep={switchFrequencyStep}
+          />
+      )}
+      {view === 'manual' && (
+          <ManualTestInterface
+              baselineGain={calibrationGain}
+              onRecordResult={(res) => addResult(res.frequency, res.ear, res.db, res.responseDetected, res.reactionTime)}
+              onHome={handleRestart}
+              onViewResults={handleShowResults}
           />
       )}
       {view === 'results' &&
