@@ -10,7 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line, Scatter } from 'react-chartjs-2';
-import { HearingTestState, TestResult } from '../types';
+import { TestResult } from '../types';
 
 ChartJS.register(
   CategoryScale,

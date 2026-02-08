@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Calibration } from './components/Calibration';
 import { Landing } from './components/Landing';

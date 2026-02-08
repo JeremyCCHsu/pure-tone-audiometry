@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { audioEngine } from '../audio/AudioEngine';
-import { TEST_TONE_DURATION, RESPONSE_WINDOW, DB_STEP, MAX_REL_DB, INTERVAL_GAP_MIN, INTERVAL_GAP_MAX, CALIBRATION_DB } from '../utils/constants';
+import { TEST_TONE_DURATION, RESPONSE_WINDOW, INTERVAL_GAP_MIN, INTERVAL_GAP_MAX, CALIBRATION_DB } from '../utils/constants';
 import { Ear, HearingTestState } from '../types';
 
 // Removed PendingTest interface as we manage state differently now
