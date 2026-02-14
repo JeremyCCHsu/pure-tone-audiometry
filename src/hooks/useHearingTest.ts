@@ -200,7 +200,7 @@ export const useHearingTest = () => {
                 completeCurrentEar();
             } else {
                 // Heard once. Decrease volume.
-                progressRef.current.currentDb -= 2.5;
+                progressRef.current.currentDb -= 5;
                 scheduleNext();
             }
         } else {

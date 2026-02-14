@@ -84,13 +84,13 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
   const rightThresholdPoints = rightThresholds.map(t => ({ x: t[0], y: t[1] }));
 
   // Helper for custom markers
-  const leftMarker = React.useMemo(() => {
+  const leftThresholdMarker = React.useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 24; canvas.height = 24;
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.fillStyle = 'rgb(53, 162, 235)';
-      ctx.font = '20px serif';
+      ctx.font = 'bold 18px serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('◖', 12, 12);
@@ -98,16 +98,44 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
     return canvas;
   }, []);
 
-  const rightMarker = React.useMemo(() => {
+  const rightThresholdMarker = React.useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 24; canvas.height = 24;
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.fillStyle = 'rgb(255, 99, 132)';
-      ctx.font = '20px serif';
+      ctx.font = 'bold 18px serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('◗', 12, 12);
+    }
+    return canvas;
+  }, []);
+
+  const leftHeardMarker = React.useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 24; canvas.height = 24;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = 'rgb(53, 162, 235)';
+      ctx.font = '18px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('(', 12, 12);
+    }
+    return canvas;
+  }, []);
+
+  const rightHeardMarker = React.useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 24; canvas.height = 24;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = 'rgb(255, 99, 132)';
+      ctx.font = '18px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(')', 12, 12);
     }
     return canvas;
   }, []);
@@ -120,7 +148,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
         data: leftThresholdPoints,
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        pointStyle: leftMarker,
+        pointStyle: leftThresholdMarker,
         pointRadius: 10,
         pointBorderWidth: 2,
         order: 1
@@ -130,7 +158,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
         data: rightThresholdPoints,
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        pointStyle: rightMarker,
+        pointStyle: rightThresholdMarker,
         pointRadius: 10,
         order: 2
       },
@@ -140,7 +168,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           data: leftHits,
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.2)',
-          pointStyle: leftMarker,
+          pointStyle: leftHeardMarker,
           pointRadius: 6,
           showLine: false,
           order: 3
@@ -150,7 +178,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           data: rightHits,
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          pointStyle: rightMarker,
+          pointStyle: rightHeardMarker,
           pointRadius: 6,
           showLine: false,
           order: 4
@@ -161,8 +189,8 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.2)',
           pointStyle: 'crossRot', // 'crossRot' is X, 'cross' is +
-          pointRadius: 6,
-          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointBorderWidth: 1,
           showLine: false,
           order: 5
       },
@@ -172,8 +200,8 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           pointStyle: 'crossRot',
-          pointRadius: 6,
-          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointBorderWidth: 1,
           showLine: false,
           order: 6
       }
