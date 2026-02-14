@@ -1,7 +1,7 @@
 {
   "landing": {
     "title": "純音聽力測試",
-    "description": "簡易純音聽力測試 (警語：非供醫療用途)。",
+    "description": "簡易純音聽力測試 (警語：不能替代專業醫療聽測結果)。",
     "selectFrequencySet": "選擇頻率組合",
     "baseSet": "基礎組合",
     "highFreq": "高頻組合",
@@ -73,10 +73,10 @@
     "title": "測試結果",
     "leftThreshold": "左耳聽力閾值",
     "rightThreshold": "右耳聽力閾值",
-    "leftHits": "左耳已聽到",
-    "rightHits": "右耳已聽到",
-    "leftMisses": "左耳未聽到",
-    "rightMisses": "右耳未聽到",
+    "leftHits": "左耳能聽到",
+    "rightHits": "右耳能聽到",
+    "leftMisses": "左耳聽不到",
+    "rightMisses": "右耳聽不到",
     "dbRelative": "相對於基準線的音量 (dB)",
     "frequencyHz": "頻率 (Hz)",
     "audiogramTitle": "聽力圖 (相對於基準線)",

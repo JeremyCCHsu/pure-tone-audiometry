@@ -165,6 +165,16 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
                 disabled={!isPlaying}
             >-5</button>
             <button
+                onClick={() => adjustVolume(-1)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
+                disabled={!isPlaying}
+            >-1</button>
+            <button
+                onClick={() => adjustVolume(1)}
+                style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
+                disabled={!isPlaying}
+            >+1</button>
+            <button
                 onClick={() => adjustVolume(5)}
                 style={{ backgroundColor: '#444', border: '1px solid #666', padding: '0.4rem 0.8rem', fontSize: '0.9em', minWidth: '45px' }}
                 disabled={!isPlaying}

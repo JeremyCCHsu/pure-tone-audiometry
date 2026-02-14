@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Chart as ChartJS,
@@ -31,8 +31,27 @@ interface ResultsProps {
   onHome: () => void;
 }
 
+const DownloadIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+);
+
 export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onRestart, onContinue, onHome }) => {
   const { t } = useTranslation();
+  const audiogramRef = useRef<any>(null);
+  const reactionTimeRef = useRef<any>(null);
+
+  const downloadImage = (chartRef: React.RefObject<any>, fileName: string) => {
+    if (chartRef.current) {
+        const link = document.createElement('a');
+        link.download = `${fileName}_${new Date().toISOString().split('T')[0]}.png`;
+        link.href = chartRef.current.toBase64Image();
+        link.click();
+    }
+  };
   // Process results
   // We want to link frequency (x) to dB (y)
   // Usually Audiograms have 0 top, 100 bottom. We can invert axis in chartjs.
@@ -75,92 +94,58 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
       return results.filter(filterFn).map(r => ({ x: r.frequency, y: r.db }));
   };
 
-  const leftHits = getPoints(r => r.ear === 'left' && r.responseDetected);
-  const rightHits = getPoints(r => r.ear === 'right' && r.responseDetected);
+  const leftThresholdMap = new Map(leftThresholds);
+  const rightThresholdMap = new Map(rightThresholds);
+
+  const leftHits = getPoints(r => r.ear === 'left' && r.responseDetected && r.db !== leftThresholdMap.get(r.frequency));
+  const rightHits = getPoints(r => r.ear === 'right' && r.responseDetected && r.db !== rightThresholdMap.get(r.frequency));
   const leftMisses = getPoints(r => r.ear === 'left' && !r.responseDetected);
   const rightMisses = getPoints(r => r.ear === 'right' && !r.responseDetected);
 
-  const leftThresholdPoints = leftThresholds.map(t => ({ x: t[0], y: t[1] }));
-  const rightThresholdPoints = rightThresholds.map(t => ({ x: t[0], y: t[1] }));
+  const leftThresholdDataPoints = allFrequencies.map(f => ({
+    x: f,
+    y: leftThresholdMap.has(f) ? leftThresholdMap.get(f) : null
+  }));
+  const rightThresholdDataPoints = allFrequencies.map(f => ({
+    x: f,
+    y: rightThresholdMap.has(f) ? rightThresholdMap.get(f) : null
+  }));
 
-  // Helper for custom markers
-  const leftThresholdMarker = React.useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 24; canvas.height = 24;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = 'rgb(53, 162, 235)';
-      ctx.font = 'bold 18px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('◖', 12, 12);
-    }
-    return canvas;
-  }, []);
-
-  const rightThresholdMarker = React.useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 24; canvas.height = 24;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = 'rgb(255, 99, 132)';
-      ctx.font = 'bold 18px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('◗', 12, 12);
-    }
-    return canvas;
-  }, []);
-
-  const leftHeardMarker = React.useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 24; canvas.height = 24;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = 'rgb(53, 162, 235)';
-      ctx.font = '18px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('(', 12, 12);
-    }
-    return canvas;
-  }, []);
-
-  const rightHeardMarker = React.useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 24; canvas.height = 24;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = 'rgb(255, 99, 132)';
-      ctx.font = '18px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(')', 12, 12);
-    }
-    return canvas;
-  }, []);
+  // Procedural Drawing Functions for Sharp Markers
+  const drawMarker = (chartCtx: CanvasRenderingContext2D, x: number, y: number, char: string, isBold: boolean, color: string, fontSize: number = 14) => {
+    chartCtx.save();
+    chartCtx.fillStyle = color;
+    chartCtx.font = `${isBold ? 'bold' : ''} ${fontSize}px serif`;
+    chartCtx.textAlign = 'center';
+    chartCtx.textBaseline = 'middle';
+    chartCtx.fillText(char, x, y);
+    chartCtx.restore();
+    return undefined;
+  };
 
   const data = {
     labels: allFrequencies,
     datasets: [
       {
         label: t('results.leftThreshold'),
-        data: leftThresholdPoints,
+        data: leftThresholdDataPoints as any,
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        pointStyle: leftThresholdMarker,
-        pointRadius: 10,
+        pointStyle: (ctx: any) => drawMarker(ctx.chart.ctx, ctx.x, ctx.y, '◖', true, 'rgb(53, 162, 235)', 14) as any,
+        pointRadius: 8,
         pointBorderWidth: 2,
-        order: 1
+        order: 1,
+        spanGaps: false
       },
       {
         label: t('results.rightThreshold'),
-        data: rightThresholdPoints,
+        data: rightThresholdDataPoints as any,
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        pointStyle: rightThresholdMarker,
-        pointRadius: 10,
-        order: 2
+        pointStyle: (ctx: any) => drawMarker(ctx.chart.ctx, ctx.x, ctx.y, '◗', true, 'rgb(255, 99, 132)', 14) as any,
+        pointRadius: 8,
+        order: 2,
+        spanGaps: false
       },
       // Scatter points for all events
       {
@@ -168,8 +153,8 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           data: leftHits,
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.2)',
-          pointStyle: leftHeardMarker,
-          pointRadius: 6,
+          pointStyle: (ctx: any) => drawMarker(ctx.chart.ctx, ctx.x, ctx.y, '(', false, 'rgb(53, 162, 235)', 12) as any,
+          pointRadius: 5,
           showLine: false,
           order: 3
       },
@@ -178,8 +163,8 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           data: rightHits,
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          pointStyle: rightHeardMarker,
-          pointRadius: 6,
+          pointStyle: (ctx: any) => drawMarker(ctx.chart.ctx, ctx.x, ctx.y, ')', false, 'rgb(255, 99, 132)', 12) as any,
+          pointRadius: 5,
           showLine: false,
           order: 4
       },
@@ -210,6 +195,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
 
   const options = {
     responsive: true,
+    devicePixelRatio: 3, // Increase resolution
     scales: {
       y: {
         reverse: true, // We want low numbers (negative dB = quiet) at the TOP (good hearing)
@@ -224,6 +210,16 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
         // Suggested range
         suggestedMin: -10,
         suggestedMax: 50,
+        grid: {
+            color: (context: any) => {
+                if (context.tick.value === 0) return 'rgba(0, 0, 0, 0.5)';
+                return 'rgba(0, 0, 0, 0.1)';
+            },
+            lineWidth: (context: any) => {
+                if (context.tick.value === 0) return 2;
+                return 1;
+            }
+        }
       },
       x: {
           title: {
@@ -262,16 +258,67 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
   return (
     <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto', paddingBottom: '2rem' }}>
       <h2 style={{ fontSize: '1.8rem', margin: '1rem 0' }}>{t('results.title')}</h2>
-      <div style={{ backgroundColor: 'white', padding: '0.5rem', borderRadius: '8px' }}>
+      <div style={{ backgroundColor: 'white', padding: '0.5rem', borderRadius: '8px', position: 'relative' }}>
+        <button
+          onClick={() => downloadImage(audiogramRef, 'audiogram')}
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            zIndex: 10,
+            padding: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(51, 51, 51, 0.6)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            backdropFilter: 'blur(2px)',
+            transition: 'background-color 0.2s'
+          }}
+          title="Download Image"
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(100, 108, 255, 0.8)'}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(51, 51, 51, 0.6)'}
+        >
+          <DownloadIcon />
+        </button>
         <div style={{ height: '300px', position: 'relative', width: '100%' }}>
-            <Line options={{...options, maintainAspectRatio: false}} data={data} />
+            <Line ref={audiogramRef} options={{...options, maintainAspectRatio: false}} data={data} />
         </div>
       </div>
 
-      <div style={{ backgroundColor: 'white', padding: '0.5rem', borderRadius: '8px', marginTop: '1.5rem' }}>
+      <div style={{ backgroundColor: 'white', padding: '0.5rem', borderRadius: '8px', marginTop: '1.5rem', position: 'relative' }}>
+        <button
+          onClick={() => downloadImage(reactionTimeRef, 'reaction_time')}
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            zIndex: 10,
+            padding: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(51, 51, 51, 0.6)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            backdropFilter: 'blur(2px)',
+            transition: 'background-color 0.2s'
+          }}
+          title="Download Image"
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(100, 108, 255, 0.8)'}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(51, 51, 51, 0.6)'}
+        >
+          <DownloadIcon />
+        </button>
         <h3 style={{ fontSize: '1.2rem', margin: '0.5rem 0', color: '#333' }}>{t('results.responseTimeAnalysis')}</h3>
         <div style={{ height: '300px', position: 'relative', width: '100%' }}>
             <Scatter
+                ref={reactionTimeRef}
                 options={{
                     ...options, // reuse base options for responsiveness
                     maintainAspectRatio: false,

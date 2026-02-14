@@ -285,6 +285,8 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
               <div style={{ fontSize: '1.2rem', fontWeight: 'bold', width: '100px', textAlign: 'center' }}>{currentVol} dB</div>
               <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                   <button onClick={() => adjustVolume(-5)} style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>-5</button>
+                  <button onClick={() => adjustVolume(-1)} style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>-1</button>
+                  <button onClick={() => adjustVolume(1)} style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>+1</button>
                   <button onClick={() => adjustVolume(5)} style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>+5</button>
               </div>
           </div>
