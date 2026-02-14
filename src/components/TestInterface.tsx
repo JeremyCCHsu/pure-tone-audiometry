@@ -162,8 +162,10 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
         <div
             className="flash-circle"
             style={{
-                border: `4px solid ${flash === 'left' ? '#646cff' : '#444'}`,
-                backgroundColor: flash === 'left' ? 'rgba(100,108,255,0.2)' : 'transparent',
+                border: `4px solid ${flash === 'left' ? '#fff' : (state.currentEar === 'left' ? '#646cff' : '#444')}`,
+                backgroundColor: flash === 'left' ? 'rgba(100,108,255,0.4)' : (state.currentEar === 'left' ? 'rgba(100,108,255,0.1)' : 'transparent'),
+                boxShadow: state.currentEar === 'left' ? '0 0 15px rgba(100, 108, 255, 0.6)' : 'none',
+                transition: 'all 0.2s ease'
             }}
         >
           F
@@ -183,8 +185,10 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
         <div
              className="flash-circle"
             style={{
-                border: `4px solid ${flash === 'right' ? '#646cff' : '#444'}`,
-                backgroundColor: flash === 'right' ? 'rgba(100,108,255,0.2)' : 'transparent',
+                border: `4px solid ${flash === 'right' ? '#fff' : (state.currentEar === 'right' ? '#ff6384' : '#444')}`,
+                backgroundColor: flash === 'right' ? 'rgba(255,99,132,0.4)' : (state.currentEar === 'right' ? 'rgba(255,99,132,0.1)' : 'transparent'),
+                boxShadow: state.currentEar === 'right' ? '0 0 15px rgba(255, 99, 132, 0.6)' : 'none',
+                transition: 'all 0.2s ease'
             }}
         >
           J
@@ -194,8 +198,7 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
 
       <p style={{ marginTop: '2rem', color: '#666', fontSize: '1.1em', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
         <span>{t('test.currentFreq')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentFreq} Hz</strong></span> |
-        <span>{t('test.vol')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentDb > 0 ? '+' : ''}{state.currentDb.toFixed(1)} dB</strong></span> |
-        <span>{t('test.ear')}: <span style={{ display: 'inline-block', width: '60px', textTransform: 'uppercase', color: state.currentEar === 'left' ? '#646cff' : '#ff6384', textAlign: 'left' }}>{state.currentEar}</span></span>
+        <span>{t('test.vol')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentDb > 0 ? '+' : ''}{state.currentDb.toFixed(1)} dB</strong></span>
       </p>
 
       <div className="bottom-controls">
