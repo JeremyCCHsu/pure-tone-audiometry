@@ -83,6 +83,35 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
   const leftThresholdPoints = leftThresholds.map(t => ({ x: t[0], y: t[1] }));
   const rightThresholdPoints = rightThresholds.map(t => ({ x: t[0], y: t[1] }));
 
+  // Helper for custom markers
+  const leftMarker = React.useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 24; canvas.height = 24;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = 'rgb(53, 162, 235)';
+      ctx.font = '20px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('◖', 12, 12);
+    }
+    return canvas;
+  }, []);
+
+  const rightMarker = React.useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 24; canvas.height = 24;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = 'rgb(255, 99, 132)';
+      ctx.font = '20px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('◗', 12, 12);
+    }
+    return canvas;
+  }, []);
+
   const data = {
     labels: allFrequencies,
     datasets: [
@@ -91,8 +120,8 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
         data: leftThresholdPoints,
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        pointStyle: 'circle',
-        pointRadius: 8,
+        pointStyle: leftMarker,
+        pointRadius: 10,
         pointBorderWidth: 2,
         order: 1
       },
@@ -101,8 +130,8 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
         data: rightThresholdPoints,
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        pointStyle: 'circle',
-        pointRadius: 8,
+        pointStyle: rightMarker,
+        pointRadius: 10,
         order: 2
       },
       // Scatter points for all events
@@ -111,8 +140,8 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           data: leftHits,
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.2)',
-          pointStyle: 'circle',
-          pointRadius: 5,
+          pointStyle: leftMarker,
+          pointRadius: 6,
           showLine: false,
           order: 3
       },
@@ -121,8 +150,8 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           data: rightHits,
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          pointStyle: 'circle',
-          pointRadius: 5,
+          pointStyle: rightMarker,
+          pointRadius: 6,
           showLine: false,
           order: 4
       },
@@ -131,14 +160,9 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           data: leftMisses,
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.2)',
-          pointStyle: 'cross',
+          pointStyle: 'crossRot', // 'crossRot' is X, 'cross' is +
           pointRadius: 6,
           pointBorderWidth: 2,
-          rotation: 45, // Make it look like 'x' if cross is '+'. 'cross' is usually '+'. 'crossRot' is 'x'.
-          // cross is +, crossRot is x. User asked for 'crosses'. Usually means X.
-          // Let's use 'crossRot' for X shape? Or just 'cross'.
-          // 'cross' in ChartJS is a plus (+). 'crossRot' is (x).
-          // User said "failed trials are shown as crosses". X is common.
           showLine: false,
           order: 5
       },
@@ -147,10 +171,9 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
           data: rightMisses,
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          pointStyle: 'cross',
+          pointStyle: 'crossRot',
           pointRadius: 6,
           pointBorderWidth: 2,
-          rotation: 45,
           showLine: false,
           order: 6
       }

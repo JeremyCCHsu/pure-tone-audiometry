@@ -1,7 +1,7 @@
 {
   "landing": {
     "title": "純音聽力測試",
-    "description": "瀏覽器中的純音聽力測試。",
+    "description": "簡易純音聽力測試 (警語：非供醫療用途)。",
     "selectFrequencySet": "選擇頻率組合",
     "baseSet": "基礎組合",
     "highFreq": "高頻組合",
@@ -10,9 +10,9 @@
     "hzRangeHigh": "4kHz - 8kHz",
     "customList": "自訂清單",
     "freqs": "個頻率",
-    "selectedFrequencies": "已選擇的頻率",
+    "selectedFrequencies": "頻率細目",
     "textareaPlaceholder": "例如：1000, 2000, 4000",
-    "startAuto": "開始自動校準與測試",
+    "startAuto": "開始校準與測試",
     "enterManual": "進入手動模式",
     "importJson": "匯入之前的結果 (JSON)",
     "alertNoFreq": "請輸入至少一個有效的頻率。"
