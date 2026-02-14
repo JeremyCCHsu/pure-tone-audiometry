@@ -136,7 +136,7 @@ export const useHearingTest = () => {
   const handleInput = (key: string) => {
     if (key === 'Enter') {
         // "skips the current frequency-hear and go to the next frequency or ear"
-        // Force move to next
+        // Force move to next frequency
         if (state.status !== 'testing' || !progressRef.current) return;
 
         if (audioControlRef.current) {
@@ -145,12 +145,11 @@ export const useHearingTest = () => {
         }
         if (timerRef.current) clearTimeout(timerRef.current);
 
-        // Record as skip? Or just move on?
-        // "Skips... and go to next".
-        // Let's just call completeCurrentEar() which moves to next ear/freq.
-        // Should we record a "Non-Response"?
-        // Request doesn't specify recording. Assuming just "Next".
-        // Use completeCurrentEar().
+        // Skip the entire frequency (both ears)
+        if (progressRef.current) {
+            progressRef.current.earsRemaining = [];
+        }
+
         completeCurrentEar();
         return;
     }

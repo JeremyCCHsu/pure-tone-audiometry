@@ -222,6 +222,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
         }
       },
       x: {
+          offset: true,
           title: {
             display: true,
             text: t('results.frequencyHz')
@@ -324,6 +325,7 @@ export const Results: React.FC<ResultsProps> = ({ results, baselineGain, onResta
                     maintainAspectRatio: false,
                     scales: {
                         x: {
+                            offset: true,
                             title: { display: true, text: t('results.frequencyHz') }
                         },
                         y: {

@@ -18,7 +18,7 @@ interface TestInterfaceProps {
 
 export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, onStop, onPause, onResume, onSwitchFreqs, onRecalibrate, onHome, onFrequencyStep }) => {
   const { t } = useTranslation();
-  const [flash, setFlash] = useState<'left' | 'right' | 'space' | null>(null);
+  const [flash, setFlash] = useState<'left' | 'right' | 'space' | 'enter' | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
 
@@ -44,6 +44,7 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
 
         onInput(e.key);
 
+        if (k === 'enter') setFlash('enter');
         if (k === 'f') setFlash('left');
         if (k === 'j') setFlash('right');
         if (k === ' ') setFlash('space');
@@ -53,6 +54,12 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [onInput, onPause, onResume, onFrequencyStep, state.status]);
+
+  const handleManualInput = (key: string, flashKey: 'left' | 'right' | 'space') => {
+      onInput(key);
+      setFlash(flashKey);
+      setTimeout(() => setFlash(null), 200);
+  };
 
   const drawWaveform = () => {
     const canvas = canvasRef.current;
@@ -161,7 +168,9 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
       <div className="flash-container">
         <div
             className="flash-circle"
+            onClick={() => handleManualInput('f', 'left')}
             style={{
+                cursor: 'pointer',
                 border: `4px solid ${flash === 'left' ? '#fff' : (state.currentEar === 'left' ? '#646cff' : '#444')}`,
                 backgroundColor: flash === 'left' ? 'rgba(100,108,255,0.4)' : (state.currentEar === 'left' ? 'rgba(100,108,255,0.1)' : 'transparent'),
                 boxShadow: state.currentEar === 'left' ? '0 0 15px rgba(100, 108, 255, 0.6)' : 'none',
@@ -174,7 +183,9 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
 
         <div
             className="flash-skip"
+            onClick={() => handleManualInput(' ', 'space')}
             style={{
+                cursor: 'pointer',
                 border: `2px solid ${flash === 'space' ? '#fff' : '#333'}`,
                 backgroundColor: flash === 'space' ? 'rgba(255,255,255,0.1)' : 'transparent',
             }}
@@ -184,7 +195,9 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
 
         <div
              className="flash-circle"
+            onClick={() => handleManualInput('j', 'right')}
             style={{
+                cursor: 'pointer',
                 border: `4px solid ${flash === 'right' ? '#fff' : (state.currentEar === 'right' ? '#ff6384' : '#444')}`,
                 backgroundColor: flash === 'right' ? 'rgba(255,99,132,0.4)' : (state.currentEar === 'right' ? 'rgba(255,99,132,0.1)' : 'transparent'),
                 boxShadow: state.currentEar === 'right' ? '0 0 15px rgba(255, 99, 132, 0.6)' : 'none',
@@ -196,10 +209,29 @@ export const TestInterface: React.FC<TestInterfaceProps> = ({ state, onInput, on
         </div>
       </div>
 
-      <p style={{ marginTop: '2rem', color: '#666', fontSize: '1.1em', display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <span>{t('test.currentFreq')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentFreq} Hz</strong></span> |
-        <span>{t('test.vol')}: <strong style={{ display: 'inline-block', width: '80px', textAlign: 'left' }}>{state.currentDb > 0 ? '+' : ''}{state.currentDb.toFixed(1)} dB</strong></span>
-      </p>
+      <div style={{ marginTop: '2rem', color: '#666', fontSize: '1.1em', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+        <span>{t('test.currentFreq')}: <strong style={{ display: 'inline-block', minWidth: '80px', textAlign: 'left' }}>{state.currentFreq} Hz</strong></span>
+        <span>{t('test.vol')}: <strong style={{ display: 'inline-block', minWidth: '80px', textAlign: 'left' }}>{state.currentDb > 0 ? '+' : ''}{state.currentDb.toFixed(1)} dB</strong></span>
+      </div>
+
+      <div style={{ marginTop: '1rem' }}>
+          <button
+              onClick={() => {
+                  onInput('Enter');
+                  setFlash('enter');
+                  setTimeout(() => setFlash(null), 200);
+              }}
+              style={{
+                  backgroundColor: flash === 'enter' ? '#555' : '#333',
+                  border: '1px solid #666',
+                  padding: '0.8rem 1.5rem',
+                  fontSize: '1em',
+                  transition: 'background-color 0.2s'
+              }}
+          >
+              {t('test.skipFrequency')} (Enter)
+          </button>
+      </div>
 
       <div className="bottom-controls">
           <button
