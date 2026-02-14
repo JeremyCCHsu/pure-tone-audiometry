@@ -54,10 +54,6 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
         adjustVolume(5);
       } else if (k === 'h') {
         adjustVolume(-5);
-      } else if (k === 'i') {
-        adjustVolume(1);
-      } else if (k === 'k') {
-        adjustVolume(-1);
       }
     };
 

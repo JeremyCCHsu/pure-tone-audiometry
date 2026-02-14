@@ -41,10 +41,6 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
         adjustVolume(5);
       } else if (k === 'h') {
         adjustVolume(-5);
-      } else if (k === 'i') {
-          adjustVolume(1);
-      } else if (k === 'k') {
-          adjustVolume(-1);
       }
     };
     window.addEventListener('keydown', handler);

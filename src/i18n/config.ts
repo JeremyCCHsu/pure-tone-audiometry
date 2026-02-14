@@ -13,7 +13,17 @@ i18n
       en: { translation: en },
       'zh-TW': { translation: zhTW },
     },
-    fallbackLng: 'en',
+    fallbackLng: {
+      'zh-HK': ['zh-TW', 'en'],
+      'zh-CN': ['zh-TW', 'en'],
+      'zh': ['zh-TW', 'en'],
+      'default': ['en']
+    },
+    supportedLngs: ['en', 'zh-TW'],
+    detection: {
+      order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
+      caches: ['localStorage', 'cookie'],
+    },
     interpolation: {
       escapeValue: false,
     },
