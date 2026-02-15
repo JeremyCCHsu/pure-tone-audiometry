@@ -9,6 +9,7 @@ interface TestProgress {
     earsRemaining: Ear[];
     currentEar: Ear;
     currentDb: number;
+    consecutiveFailures: number; // consecutive failures for increment logic
     history: { [db: number]: number }; // track hits per db
 }
 
@@ -47,6 +48,7 @@ export const useHearingTest = () => {
         earsRemaining: ears, // both ears for this freq
         currentEar: ears[0],
         currentDb: 0, // Start at 0 dB relative to baseline
+        consecutiveFailures: 0,
         history: {}
     };
 
@@ -116,13 +118,27 @@ export const useHearingTest = () => {
     // Record fail for this specific trial
     if (progressRef.current) {
         recordResult(frequenciesRef.current[progressRef.current.freqIndex], progressRef.current.currentEar, progressRef.current.currentDb, false);
+        progressRef.current.consecutiveFailures += 1;
     }
 
     // But check safety limits
     if (progressRef.current.currentDb >= 60) {
         completeCurrentEar();
     } else {
-        progressRef.current.currentDb += 5;
+        let step = 5;
+        const failures = progressRef.current.consecutiveFailures;
+        // If failed 5dB increment twice in a row (failures 1 and 2 were 5dB steps?), next is 10dB (for failure 3?).
+        // Logic:
+        // Fail 1: step 5.
+        // Fail 2: step 5.
+        // Fail 3: step 10.
+        // Fail 4+: step 20.
+        if (failures >= 4) step = 20;
+        else if (failures === 3) step = 10;
+
+        let nextDb = progressRef.current.currentDb + step;
+        if (nextDb > 60) nextDb = 60;
+        progressRef.current.currentDb = nextDb;
         scheduleNext();
     }
   };
@@ -131,6 +147,12 @@ export const useHearingTest = () => {
     const delay = Math.random() * (INTERVAL_GAP_MAX - INTERVAL_GAP_MIN) + INTERVAL_GAP_MIN;
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => runTrial(), delay);
+  };
+
+  const calculateStartVolume = (lastDb: number) => {
+    if (lastDb >= 60) return 40;
+    if (lastDb > 40) return lastDb - 20;
+    return lastDb;
   };
 
   const handleInput = (key: string) => {
@@ -188,6 +210,7 @@ export const useHearingTest = () => {
         if (detectedEar === currentEar) {
             // Correct Ear
             // Track hit
+            progressRef.current.consecutiveFailures = 0; // Reset failures
             const hits = (progressRef.current.history[currentDb] || 0) + 1;
             progressRef.current.history[currentDb] = hits;
 
@@ -205,7 +228,16 @@ export const useHearingTest = () => {
         } else {
             // Wrong ear. Record MISS.
             recordResult(freq, currentEar, currentDb, false, reactionTime);
-             progressRef.current.currentDb += 5;
+             progressRef.current.consecutiveFailures += 1;
+
+             let step = 5;
+             const failures = progressRef.current.consecutiveFailures;
+             if (failures >= 4) step = 20;
+             else if (failures === 3) step = 10;
+
+             let nextDb = progressRef.current.currentDb + step;
+             if (nextDb > 60) nextDb = 60;
+             progressRef.current.currentDb = nextDb;
              scheduleNext();
         }
     }
@@ -216,19 +248,12 @@ export const useHearingTest = () => {
 
       // Capture last dB for adaptive start
       const lastDb = progressRef.current.currentDb;
+      const nextStartDb = calculateStartVolume(lastDb);
 
       // Move to next ear or next freq
       const earsRemaining = progressRef.current.earsRemaining;
 
       // We just finished earsRemaining[0]
-      // Remove it?
-      // Actually earsRemaining was initialized like ['left', 'right']
-      // We are listening to 'currentEar'.
-      // Let's just shift properly.
-
-      // Wait, currentEar matches earsRemaining[0] implicitly in my logic?
-      // Let's make it explicit.
-
       // Remove current ear from list
       const nextEars = earsRemaining.filter(e => e !== progressRef.current!.currentEar);
 
@@ -236,7 +261,8 @@ export const useHearingTest = () => {
           // Setup next ear for same freq
           progressRef.current.earsRemaining = nextEars;
           progressRef.current.currentEar = nextEars[0];
-          progressRef.current.currentDb = 0; // Reset to baseline
+          progressRef.current.currentDb = nextStartDb;
+          progressRef.current.consecutiveFailures = 0;
           progressRef.current.history = {};
           scheduleNext();
       } else {
@@ -249,7 +275,8 @@ export const useHearingTest = () => {
               progressRef.current.freqIndex = nextFreqIdx;
               progressRef.current.earsRemaining = newEars;
               progressRef.current.currentEar = newEars[0];
-              progressRef.current.currentDb = lastDb;
+              progressRef.current.currentDb = nextStartDb;
+              progressRef.current.consecutiveFailures = 0;
               progressRef.current.history = {};
               scheduleNext();
           }
@@ -344,6 +371,7 @@ export const useHearingTest = () => {
         earsRemaining: ears,
         currentEar: ears[0],
         currentDb: 0,
+        consecutiveFailures: 0,
         history: {}
       };
       // Logic from switchFrequencyStep might need to be applied if we want immediate update.

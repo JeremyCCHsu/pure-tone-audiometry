@@ -92,5 +92,23 @@
     "returnToHome": "Return to Home",
     "baselineGain": "Baseline Gain",
     "note": "Note: These results are relative to your baseline. 0 dB = Baseline volume. Negative values = Quieter than baseline. Positive = Louder. Values higher on the chart (more negative) indicate better hearing sensitivity. This is NOT a medical diagnosis."
+  },
+  "frequencyTable": {
+    "title": "Frequency Correspondence Table",
+    "close": "Close",
+    "freqHeader": "Frequency (Hz)",
+    "descHeader": "Everyday Sound Correspondence",
+    "f500": "Dehumidifier low frequency sound",
+    "f550_800": "Pigeon cooing",
+    "f1000": "Lowest note of a whistle",
+    "f2000": "\"Squeak\" sound of a construction site elevator",
+    "f1300_3500": "Chinese Bulbul call",
+    "f4000": "Highest note of a whistle",
+    "f4400": "Cricket chirping",
+    "f6000": "High-pitched metallic \"eeee\" from precision instruments",
+    "f6000_10000": "Platypleura kaempferi (Cicada) call",
+    "f8000_13000": "Mogannia hebes (Cicada) call",
+    "f14000": "Dolphin trainer's whistle at Farglory Ocean Park",
+    "f16000": "Machine hum outside Chiang Kai-shek exhibition room at Lishan Guest House"
   }
 }

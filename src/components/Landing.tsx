@@ -12,6 +12,23 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart, onImpo
   const { t } = useTranslation();
   const [selectedSet, setSelectedSet] = useState<'LOW' | 'HIGH' | 'FULL'>('LOW');
   const [customFrequencies, setCustomFrequencies] = useState<string>(FREQUENCIES.FULL.join(', '));
+  const [showFreqInfo, setShowFreqInfo] = useState(false);
+
+  const frequencyInfo = [
+    { freq: '500', key: 'f500' },
+    { freq: '550-800', key: 'f550_800', link: 'https://youtu.be/Rq3hmeZqzEw?si=wmWp8O82eDbmUkQ5&t=15' },
+    { freq: '1000', key: 'f1000' },
+    { freq: '2000', key: 'f2000' },
+    { freq: '1300 - 3500', key: 'f1300_3500', link: 'https://youtu.be/Rq3hmeZqzEw?si=GZsSmGyeiy9suD71&t=21' },
+    { freq: '4000', key: 'f4000' },
+    { freq: '4400', key: 'f4400', link: 'https://www.youtube.com/watch?v=p8a5jn6C_gQ' },
+    { freq: '6000', key: 'f6000' },
+    { freq: '6000-10000', key: 'f6000_10000', link: 'https://youtu.be/OKpXHmYe_OY?si=FXjVwJjfmDcR3uN1&t=206' },
+    { freq: '8000-13000', key: 'f8000_13000', link: 'https://youtu.be/OKpXHmYe_OY?si=pZFKPEtEZQXdMkUW&t=112' },
+    { freq: '14000', key: 'f14000' },
+    { freq: '16000', key: 'f16000' },
+  ];
+
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const getCurrentFrequencies = () => {
@@ -90,7 +107,28 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart, onImpo
       </p>
 
       <div style={{ margin: '1rem 0' }}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', marginTop: 0 }}>{t('landing.selectFrequencySet')}</h3>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem' }}>
+            <h3 style={{ fontSize: '1rem', margin: 0 }}>{t('landing.selectFrequencySet')}</h3>
+            <button
+                onClick={() => setShowFreqInfo(true)}
+                style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#aaa',
+                    padding: 0,
+                    display: 'flex',
+                    alignItems: 'center'
+                }}
+                title={t('frequencyTable.title')}
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </button>
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
           <button
             onClick={() => setSelectedSet('LOW')}
@@ -253,6 +291,65 @@ export const Landing: React.FC<LandingProps> = ({ onStart, onManualStart, onImpo
           {t('landing.importJson')}
         </button>
       </div>
+
+       {showFreqInfo && (
+           <div style={{
+               position: 'fixed',
+               top: 0,
+               left: 0,
+               width: '100%',
+               height: '100%',
+               backgroundColor: 'rgba(0,0,0,0.8)',
+               display: 'flex',
+               justifyContent: 'center',
+               alignItems: 'center',
+               zIndex: 1000,
+               padding: '1rem'
+           }}>
+               <div style={{
+                   backgroundColor: '#222',
+                   padding: '1.5rem',
+                   borderRadius: '8px',
+                   maxWidth: '600px',
+                   width: '100%',
+                   maxHeight: '90vh',
+                   overflowY: 'auto',
+                   border: '1px solid #444'
+               }}>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                       <h2 style={{ fontSize: '1.2rem', margin: 0 }}>{t('frequencyTable.title')}</h2>
+                       <button onClick={() => setShowFreqInfo(false)} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+                   </div>
+                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                       <thead>
+                           <tr style={{ borderBottom: '1px solid #444', textAlign: 'left' }}>
+                               <th style={{ padding: '0.5rem' }}>{t('frequencyTable.freqHeader')}</th>
+                               <th style={{ padding: '0.5rem' }}>{t('frequencyTable.descHeader')}</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                           {frequencyInfo.map((info, index) => (
+                               <tr key={index} style={{ borderBottom: '1px solid #333' }}>
+                                   <td style={{ padding: '0.5rem', color: '#646cff' }}>{info.freq}</td>
+                                   <td style={{ padding: '0.5rem' }}>
+                                       {info.link ? (
+                                           <a href={info.link} target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'underline' }}>
+                                               {t(`frequencyTable.${info.key}`)}
+                                           </a>
+                                       ) : (
+                                           <span>{t(`frequencyTable.${info.key}`)}</span>
+                                       )}
+                                   </td>
+                               </tr>
+                           ))}
+                       </tbody>
+                   </table>
+                   <div style={{ textAlign: 'right', marginTop: '1rem' }}>
+                       <button onClick={() => setShowFreqInfo(false)} style={{ padding: '0.5rem 1rem' }}>{t('frequencyTable.close')}</button>
+                   </div>
+               </div>
+           </div>
+       )}
     </div>
   );
 };

@@ -11,6 +11,7 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
   const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [gain, setGain] = useState(0.001); // Start at ~-60dB
+  const [frequency, setFrequency] = useState(1000);
   const toneControl = useRef<{ stop: () => void; setGain: (g: number) => void } | null>(null);
 
   /* Move handleStartTest up */
@@ -70,7 +71,7 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
       setIsPlaying(false);
     } else {
       await audioEngine.init();
-      toneControl.current = audioEngine.startContinuousTone(500, gain);
+      toneControl.current = audioEngine.startContinuousTone(frequency, gain);
       setIsPlaying(true);
     }
   };
@@ -196,6 +197,19 @@ export const Calibration: React.FC<CalibrationProps> = ({ onComplete, onHome }) 
         </button>
         <div style={{ marginTop: '0.5rem' }}>
            <small>{t('calibration.level')}: {(20 * Math.log10(gain / 0.001)).toFixed(1)} dB</small>
+        </div>
+        <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+            <label style={{ fontSize: '0.9rem' }}>
+                {t('calibration.frequency', 'Frequency')}:
+                <input
+                    type="number"
+                    value={frequency}
+                    onChange={(e) => setFrequency(Number(e.target.value))}
+                    style={{ marginLeft: '0.5rem', padding: '0.2rem', width: '70px', backgroundColor: '#333', color: 'white', border: '1px solid #555' }}
+                    disabled={isPlaying}
+                />
+                Hz
+            </label>
         </div>
         <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', width: '100%' }}>
              <canvas
