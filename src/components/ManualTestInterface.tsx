@@ -56,7 +56,9 @@ export const ManualTestInterface: React.FC<ManualTestInterfaceProps> = ({
     setCurrentVol(prev => {
         const newVol = prev + delta;
         // Calculate max dB based on baselineGain
-        const maxDb = 20 * Math.log10(1.0 / baselineGain);
+        const headroom = 20 * Math.log10(1.0 / baselineGain);
+        const limit = 80;
+        const maxDb = Math.min(headroom, limit);
 
         let finalVol = newVol;
         if (finalVol > maxDb) finalVol = Math.floor(maxDb);
